@@ -42,4 +42,8 @@ testem.log
 Thumbs.db
 
 #other
+<<<<<<< HEAD
 src/environments/environment.ts
+=======
+./src/environments/environment.ts
+>>>>>>> 8660b0e012860da6db4ab3341f8e3ba30a5cd4e2
