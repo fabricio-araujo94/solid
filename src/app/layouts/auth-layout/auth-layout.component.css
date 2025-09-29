@@ -1,0 +1,36 @@
+:host {
+  /* Ocupa a tela inteira */
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+
+  /* Centraliza o conteúdo (header + formulário) */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+
+  /* Cor de fundo que estava nos outros componentes */
+  background-color: #34495e;
+}
+
+.page-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.page-header p {
+  margin: 5px 0 0 0;
+  font-size: 16px;
+  color: #bdc3c7; /* Um cinza claro para o subtítulo */
+}
