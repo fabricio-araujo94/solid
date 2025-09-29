@@ -1,8 +1,7 @@
-<div *ngIf="(authService.user$ | async) as user; else showLogin">
-  <p>Bem-vindo, {{ user.email }}!</p>
-  <button (click)="logout()">Sair</button>
-</div>
+<header class="main-header">
+  
+</header>
 
-<ng-template #showLogin>
-  <p>Por favor, faça o login.</p>
-</ng-template>
+<main class="content">
+  <router-outlet></router-outlet>
+</main>

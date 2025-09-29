@@ -1,11 +1,15 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router'; // O import já está aqui
 import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule],
+  standalone: true, // Adicione 'standalone: true' para clareza
+  imports: [
+    CommonModule,
+    RouterOutlet // <-- A CORREÇÃO É ADICIONAR ESTA LINHA
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
