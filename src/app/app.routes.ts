@@ -1,11 +1,23 @@
 import { Routes } from '@angular/router';
+
 import { AppComponent } from './app.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { LoginComponent } from './pages/login/login.component';
 
 import { authGuard } from './guards/auth.guard';
 
+
 export const routes: Routes = [
   // Rotas públicas
-  { path: 'login', component: AppComponent },
+  { 
+    path: 'signup', 
+    component: RegisterComponent,
+  },
+
+  { 
+    path: 'login', 
+    component: LoginComponent, 
+},
 
   // Rotas privadas
   {
