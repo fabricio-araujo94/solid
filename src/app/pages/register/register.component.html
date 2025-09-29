@@ -1,0 +1,52 @@
+<app-auth-layout>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <span class="icon"></span>
+        <h2>Cadastro no Sistema</h2>
+      </div>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">E-mail *</label>
+          <input id="email" type="email" formControlName="email" placeholder="Digite seu e-mail">
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+            <small class="error-message">
+              @if (registerForm.get('email')?.hasError('required')) { E-mail é obrigatório. }
+              @if (registerForm.get('email')?.hasError('email')) { Formato de e-mail inválido. }
+            </small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Senha *</label>
+          <input id="password" type="password" formControlName="password" placeholder="Mínimo 6 caracteres">
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            <small class="error-message">
+              @if (registerForm.get('password')?.hasError('required')) { Senha é obrigatória. }
+              @if (registerForm.get('password')?.hasError('minlength')) { A senha deve ter no mínimo 6 caracteres. }
+            </small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Senha *</label>
+          <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="Repita a senha">
+          @if (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) {
+            <small class="error-message">Confirmação é obrigatória.</small>
+          }
+          @if (registerForm.hasError('passwordsMismatch') && registerForm.get('confirmPassword')?.touched) {
+            <small class="error-message">As senhas não coincidem.</small>
+          }
+        </div>
+
+        @if (firebaseError) {
+          <div class="firebase-error">{{ firebaseError }}</div>
+        }
+
+        <button type="submit" [disabled]="registerForm.invalid">Cadastrar Usuário</button>
+
+        <p class="navigation-link">Já tem uma conta? <a routerLink="/login">Faça login</a></p>
+      </form>
+    </div>
+  </div>
+</app-auth-layout>
