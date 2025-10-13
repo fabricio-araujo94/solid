@@ -1,0 +1,25 @@
+<header>
+  <div class="logo-container" routerLink="/home">
+    <h1>SOLID</h1>
+    <p>Comparação de Modelos 3D</p>
+  </div>
+
+  @if (authService.user$ | async; as user) {
+    <div class="user-menu-container">
+      <div class="user-menu" (click)="toggleDropdown()">
+        <div class="avatar">
+          <span>{{ (user.email?.charAt(0) ?? 'U').toUpperCase() }}</span>
+        </div>
+        <span class="username">{{ user.email }}</span>
+        <span class="arrow">{{ isDropdownOpen ? '▲' : '▼' }}</span>
+      </div>
+
+      @if (isDropdownOpen) {
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">Meu Perfil</a>
+          <button class="dropdown-item" (click)="logout()">Sair</button>
+        </div>
+      }
+    </div>
+  }
+</header>

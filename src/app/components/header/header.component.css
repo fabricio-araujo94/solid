@@ -1,0 +1,99 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: #34495e;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.logo-container h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.logo-container p {
+  margin: 0;
+  padding-left: 15px;
+  border-left: 1px solid #7f8c8d;
+  color: #bdc3c7;
+  font-size: 14px;
+}
+
+.user-menu-container {
+  position: relative; /* Essencial para o posicionamento do dropdown */
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.user-menu:hover {
+  background-color: #4a6572;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #3498db;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.username {
+  font-size: 14px;
+}
+
+.arrow {
+  font-size: 12px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%; /* Posiciona logo abaixo do menu */
+  right: 0;
+  background-color: white;
+  color: #333;
+  border-radius: 6px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
+  z-index: 1000;
+  overflow: hidden; /* Garante que os cantos fiquem arredondados */
+  padding: 5px 0;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  text-align: left;
+  font-size: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f4f6f9;
+}
