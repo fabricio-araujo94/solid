@@ -1,0 +1,52 @@
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2>Cadastro de Peça Padrão</h2>
+      <p>Defina o padrão oficial para inspeções de qualidade</p>
+    </div>
+    
+    <form [formGroup]="partForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">name da Peça *</label>
+        <input id="name" type="text" formControlName="name" placeholder="Ex: Parafuso M8 x 20mm">
+        @if (partForm.get('name')?.invalid && partForm.get('name')?.touched) {
+          <small class="error-message">name é obrigatório.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="sku">Código SKU *</label>
+        <input id="sku" type="text" formControlName="sku" placeholder="Ex: PRF-M8-020">
+        @if (partForm.get('sku')?.invalid && partForm.get('sku')?.touched) {
+          <small class="error-message">SKU é obrigatório.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Imagens de Referência *</label>
+        <div class="image-upload-container">
+          <label for="inputSideImage" class="upload-box">
+            <input type="file" id="inputSideImage" (change)="onFileSelected($event, 'input_side_image')">
+            <span class="upload-icon">📷</span>
+            <span class="upload-title">Imagem Lateral</span>
+            <span class="upload-filename">{{ partForm.get('input_side_image')?.value?.name || 'Nenhum arquivo escolhido' }}</span>
+          </label>
+          <label for="inputFrontImage" class="upload-box">
+            <input type="file" id="inputFrontImage" (change)="onFileSelected($event, 'input_front_image')">
+            <span class="upload-icon">📷</span>
+            <span class="upload-title">Imagem Frontal</span>
+            <span class="upload-filename">{{ partForm.get('input_front_image')?.value?.name || 'Nenhum arquivo escolhido' }}</span>
+          </label>
+        </div>
+        @if (partForm.get('input_side_image')?.invalid && partForm.get('input_side_image')?.touched) {
+            <small class="error-message">Imagem lateral é obrigatória.</small>
+        }
+        @if (partForm.get('input_front_image')?.invalid && partForm.get('input_front_image')?.touched) {
+            <small class="error-message">Imagem frontal é obrigatória.</small>
+        }
+      </div>
+      
+      <button type="submit" [disabled]="partForm.invalid">Cadastrar Peça Padrão</button>
+    </form>
+  </div>
+</div>
