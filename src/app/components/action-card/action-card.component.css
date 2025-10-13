@@ -1,0 +1,29 @@
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  color: white;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+h3 {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+p {
+  font-size: 15px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+.green { background-color: #2ecc71; }
+.blue { background-color: #3498db; }
+.purple { background-color: #9b59b6; }
