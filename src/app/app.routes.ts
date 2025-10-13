@@ -1,15 +1,17 @@
 import { Routes } from '@angular/router';
 
-<<<<<<< HEAD
 import { AppComponent } from './app.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
+import { HomeComponent } from './pages/home/home.component';
+import { PartAddComponent } from './pages/part-add/part-add.component';
+import { PartsListComponent } from './pages/parts-list/parts-list.component';
+import { ComparisonComponent } from './pages/comparison/comparison.component';
 
 import { authGuard } from './guards/auth.guard';
 
-
 export const routes: Routes = [
-  // Rotas públicas
+  // public routes
   { 
     path: 'signup', 
     component: RegisterComponent,
@@ -20,31 +22,28 @@ export const routes: Routes = [
     component: LoginComponent, 
 },
 
-  // Rotas privadas
+  // private routes
   {
     path: 'home',
-    component: AppComponent,
+    component: HomeComponent,
     canActivate: [authGuard] 
   },
   {
     path: 'create-pattern-model',
-    component: AppComponent,
+    component: PartAddComponent,
     canActivate: [authGuard] 
   },
   {
     path: 'list-models',
-    component: AppComponent,
+    component: PartsListComponent,
     canActivate: [authGuard] 
   },
   {
     path: 'compare-models',
-    component: AppComponent,
+    component: ComparisonComponent,
     canActivate: [authGuard] 
   },
 
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/home' }
 ];
-=======
-export const routes: Routes = [];
->>>>>>> 8660b0e012860da6db4ab3341f8e3ba30a5cd4e2

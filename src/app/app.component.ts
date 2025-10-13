@@ -1,30 +1,23 @@
-<<<<<<< HEAD
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router'; // O import já está aqui
-import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 
-@Component({
-  selector: 'app-root',
-  standalone: true, // Adicione 'standalone: true' para clareza
-  imports: [
-    CommonModule,
-    RouterOutlet // <-- A CORREÇÃO É ADICIONAR ESTA LINHA
-  ],
-=======
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { AuthService } from './services/auth.service';
+
+import { HeaderComponent } from './components/header/header.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
->>>>>>> 8660b0e012860da6db4ab3341f8e3ba30a5cd4e2
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    HeaderComponent
+    ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'solid';
-<<<<<<< HEAD
   authService = inject(AuthService);
 
   logout() {
@@ -33,6 +26,4 @@ export class AppComponent {
     });
   }
 }
-=======
-}
->>>>>>> 8660b0e012860da6db4ab3341f8e3ba30a5cd4e2
+
