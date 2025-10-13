@@ -1,0 +1,75 @@
+<div class="container">
+  <div class="control-panel">
+    <div class="card">
+      <h3>Upload de Imagens</h3>
+      <form [formGroup]="uploadForm">
+        <div class="form-group">
+          <label for="imageFront">Imagem Frontal</label>
+          <input type="file" id="imageFront" (change)="onFileSelected($event, 'imageFront')">
+        </div>
+        <div class="form-group">
+          <label for="imageSide">Imagem Lateral</label>
+          <input type="file" id="imageSide" (change)="onFileSelected($event, 'imageSide')">
+        </div>
+      </form>
+      <button (click)="generate3DModel()" [disabled]="uploadForm.invalid || status !== StatusEnum.Initial">
+        @if(status === StatusEnum.Processing) {
+          <span>Processando...</span>
+        } @else {
+          <span>Gerar Modelo 3D</span>
+        }
+      </button>
+    </div>
+    <div class="card">
+      <h3>Controles de Visualização</h3>
+      <div class="form-group">
+        <label>Rotação X: </label>
+        <input type="range" min="0" max="360">
+      </div>
+      <div class="form-group">
+        <label>Rotação Y: </label>
+        <input type="range" min="0" max="360">
+      </div>
+       <div class="form-group">
+        <label>Zoom: {{ zoomValue$ | async }}</label>
+        <input type="range" min="10" max="100" formControlName="zoom">
+      </div>
+    </div>
+  </div>
+
+  <div class="main-panel">
+    <div class="viewers">
+      <div class="card viewer-card reference">
+        <h3>Modelo de Referência</h3>
+        <div class="viewer-content">
+          <div class="placeholder">3D</div>
+        </div>
+      </div>
+      <div class="card viewer-card generated">
+        <h3>Modelo Gerado</h3>
+        <div class="viewer-content">
+          @if(status === StatusEnum.Processing || status === StatusEnum.Initial) {
+            <p>Aguardando geração do modelo</p>
+          } @else {
+            <div class="placeholder">3D</div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-feedback">
+      <div class="actions-buttons">
+        <button class="approve" (click)="approvePart()" [disabled]="status !== StatusEnum.Ready">✓ Aprovar Peça</button>
+        <button class="reject" (click)="rejectPart()" [disabled]="status !== StatusEnum.Ready">✗ Reprovar Peça</button>
+        <button class="reset" (click)="reboot()">↻ Reiniciar</button>
+      </div>
+      
+      @if(status === StatusEnum.Approved) {
+        <div class="feedback-banner approved">✓ Peça Aprovada</div>
+      }
+      @if(status === StatusEnum.Rejected) {
+        <div class="feedback-banner rejected">✗ Peça Reprovada: A peça não atende aos padrões de qualidade.</div>
+      }
+    </div>
+  </div>
+</div>
