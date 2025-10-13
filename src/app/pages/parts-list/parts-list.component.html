@@ -1,0 +1,55 @@
+<div class="list-container">
+  <header class="page-header">
+    <div>
+      <h2>Gestão de Peças</h2>
+      <p>Catálogo completo de modelos e especificações</p>
+    </div>
+    <button class="add-button" routerLink="/create-pattern-model">+ Adicionar Nova Peça</button>
+  </header>
+
+  <div class="table-card">
+    @if (parts$ | async; as parts) {
+      @if (parts.length > 0) {
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Nome</th>
+              <th>Vista Frontal</th>
+              <th>Vista Lateral</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (part of parts; track part.id) {
+              <tr>
+                <td><span class="sku-pill">{{ part.sku }}</span></td>
+                <td>{{ part.name }}</td>
+                <td>
+                  <div class="image-cell">
+                    <img [src]="part.input_front_image_url" [alt]="part.name + ' - frontal'">
+                  </div>
+                </td>
+                <td>
+                  <div class="image-cell">
+                    <img [src]="part.input_side_image_url" [alt]="part.name + ' - lateral'">
+                  </div>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="edit-button">Editar</button>
+                    <button class="delete-button" (click)="onDelete(part)">Excluir</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="empty-message">Nenhuma peça cadastrada ainda. <a routerLink="/create-pattern-model">Adicione a primeira!</a></p>
+      }
+    } @else {
+      <p class="loading-message">Carregando peças...</p>
+    }
+  </div>
+</div>
