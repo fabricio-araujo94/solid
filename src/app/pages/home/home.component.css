@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  padding: 40px;
+  background-color: #f4f6f9;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.welcome-section h2 {
+  font-size: 32px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.welcome-section p {
+  font-size: 18px;
+  color: #666;
+}
+
+.action-cards, .stats-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 40px;
+}
