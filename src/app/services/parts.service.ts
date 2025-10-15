@@ -16,7 +16,7 @@ export interface Part {
 })
 export class PartsService {
   private http = inject(HttpClient);
-  private apiUrl = `${backend_api.apiUrl}/parts`;
+  private apiUrl = `${backend_api.apiUrl}/api/parts`;
 
   constructor() { }
 

@@ -14,7 +14,7 @@ export interface DashboardStats {
 })
 export class DashboardService {
   private http = inject(HttpClient);
-  private apiUrl = `${backend_api.apiUrl}/stats`;
+  private apiUrl = `${backend_api.apiUrl}/api/stats`;
 
 
   constructor() { }

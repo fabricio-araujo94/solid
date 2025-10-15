@@ -17,7 +17,7 @@ export interface JobStatusResponse {
 })
 export class ComparisonService {
   private http = inject(HttpClient);
-  private apiUrl = `${backend_api.apiUrl}/compare`; 
+  private apiUrl = `${backend_api.apiUrl}/api/compare`; 
 
   startModelGeneration(formData: FormData): Observable<JobResponse> {
     return this.http.post<JobResponse>(this.apiUrl, formData);
