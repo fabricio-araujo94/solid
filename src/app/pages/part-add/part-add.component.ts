@@ -12,7 +12,7 @@ import { PartsService } from '../../services/parts.service';
   selector: 'app-part-add',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './part-add.component.html',
-  styleUrl: './part-add.component.css'
+  styleUrls: ['./part-add.component.css']
 })
 export class PartAddComponent {
   private fb = inject(FormBuilder);
@@ -47,13 +47,17 @@ export class PartAddComponent {
 
     formData.append("name", this.partForm.get("name")?.value);
     formData.append("sku", this.partForm.get("sku")?.value);
-    formData.append("input_side_image", this.partForm.get("inputSideImage")?.value);
-    formData.append("input_front_image", this.partForm.get("inputFrontImage")?.value);
+  formData.append("side_image", this.partForm.get("input_side_image")?.value);
+  formData.append("front_image", this.partForm.get("input_front_image")?.value);
+
+  // Debug: log entries so we can inspect the FormData contents in devtools
+  const entries: Array<[string, any]> = [];
+  formData.forEach((value, key) => entries.push([key, value]));
+  console.log('FormData entries:', entries);
 
     this.partServices.addPart(formData).subscribe({
       next: () => {
-        console.log(FormData);
-        console.log("Peça cadastrada com sucesso!");
+        console.log('Part successfully created');
         this.router.navigate(['/list-models']);
       },
       error: (err) => {

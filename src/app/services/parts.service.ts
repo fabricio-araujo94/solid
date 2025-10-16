@@ -7,8 +7,8 @@ export interface Part {
   id: number;
   name: string;
   sku: string;
-  input_side_image_url: string;
-  input_front_image_url: string;
+  side_image_url: string;
+  front_image_url: string;
 }
 
 @Injectable({
@@ -16,11 +16,13 @@ export interface Part {
 })
 export class PartsService {
   private http = inject(HttpClient);
-  private apiUrl = `${backend_api.apiUrl}/api/parts`;
+  private apiUrl = `${backend_api.apiUrl}/api/parts/`;
 
   constructor() { }
 
   addPart(partData: FormData): Observable<Part> {
+    console.log(partData);
+    // Let the browser set the correct Content-Type (multipart/form-data with boundary)
     return this.http.post<Part>(this.apiUrl, partData);
   }
 
