@@ -7,6 +7,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { PartAddComponent } from './pages/part-add/part-add.component';
 import { PartsListComponent } from './pages/parts-list/parts-list.component';
 import { ComparisonComponent } from './pages/comparison/comparison.component';
+import { PartDetailComponent } from './pages/part-detail/part-detail.component'; 
 
 import { authGuard } from './guards/auth.guard';
 
@@ -36,6 +37,11 @@ export const routes: Routes = [
   {
     path: 'list-models',
     component: PartsListComponent,
+    canActivate: [authGuard] 
+  },
+  {
+    path: 'parts/:id',
+    component: PartDetailComponent,
     canActivate: [authGuard] 
   },
   {

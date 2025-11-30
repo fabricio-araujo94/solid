@@ -38,6 +38,13 @@
                 <td>
                   <div class="actions-cell">
                     <button class="edit-button">Editar</button>
+                    <button 
+                      class="history-button" 
+                      [routerLink]="['/parts', part.id]"
+                      title="Ver Histórico de Inspeções"
+                    >
+                      Histórico
+                    </button>
                     <button class="delete-button" (click)="onDelete(part)">Excluir</button>
                   </div>
                 </td>

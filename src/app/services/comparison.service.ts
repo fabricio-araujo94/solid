@@ -12,6 +12,11 @@ export interface JobStatusResponse {
   modelUrl?: string; 
 }
 
+export interface FinalResult {
+    jobId: number;
+    status: 'APPROVED' | 'REJECTED'; 
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,7 +32,12 @@ export class ComparisonService {
     return this.http.get<JobStatusResponse>(`${this.apiUrl}/status/${jobId}`);
   }
 
-  saveResult(resultDate: { partId: number, status: 'approved' | 'failed' }) {
-    console.log('Salvando resultado:', resultDate);
+  updateJobStatus(jobId: number, status: 'approved' | 'rejected'): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${jobId}`, { status });
+  }
+
+  saveResult(result: FinalResult): Observable<any> {
+    const { jobId, status } = result;
+    return this.http.put(`${this.apiUrl}/${jobId}/status`, status);
   }
 }

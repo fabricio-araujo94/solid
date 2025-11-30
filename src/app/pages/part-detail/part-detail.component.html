@@ -1,0 +1,80 @@
+<div class="list-container">
+  <header class="page-header">
+    <div>
+      <h2>Detalhes da Peça Padrão</h2>
+      <p>Visualização da peça e histórico de controle de qualidade.</p>
+    </div>
+    <button class="add-button" routerLink="/parts" title="Voltar para a lista">Voltar</button>
+  </header>
+
+  @if (isLoading) {
+    <p class="loading-message">Carregando detalhes da peça e histórico...</p>
+  } @else if (part) {
+    <div class="table-card mb-5">
+      <h3 class="text-xl font-bold mb-4 border-b pb-2">Peça: {{ part.name }} ({{ part.sku }})</h3>
+      
+      <div class="grid grid-cols-2 gap-4 part-info-grid">
+        <div>
+          <p class="font-semibold">SKU:</p>
+          <span class="sku-pill">{{ part.sku }}</span>
+        </div>
+        
+        <div class="image-detail">
+          <p class="font-semibold">Imagem Frontal Padrão:</p>
+          <img [src]="part.front_image_url" alt="Vista frontal da peça padrão">
+        </div>
+        <div class="image-detail">
+          <p class="font-semibold">Imagem Lateral Padrão:</p>
+          <img [src]="part.side_image_url" alt="Vista lateral da peça padrão">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h3 class="text-xl font-bold mb-4 border-b pb-2">Histórico de Inspeções (Jobs)</h3>
+      
+      @if (history.length > 0) {
+        <table>
+          <thead>
+            <tr>
+              <th>ID Job</th>
+              <th>Data/Hora</th>
+              <th>Status</th>
+              <th>Modelo 3D</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (job of history; track job.id) {
+              <tr>
+                <td>#{{ job.id }}</td>
+                <td>{{ job.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <span [class]="getStatusClass(job.status)">
+                    {{ job.status }}
+                  </span>
+                </td>
+                <td>
+                  @if (job.output_model_url) {
+                    <a [href]="job.output_model_url" target="_blank" class="text-blue-600 underline">
+                      Download
+                    </a>
+                  } @else {
+                    Aguardando...
+                  }
+                </td>
+                <td>
+                  <button class="edit-button" title="Ver o modelo gerado e os controles">Ver Comparação</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="empty-message">Nenhuma inspeção (Job) realizada para esta peça ainda.</p>
+      }
+    </div>
+  } @else {
+    <p class="empty-message">Peça não encontrada.</p>
+  }
+</div>
