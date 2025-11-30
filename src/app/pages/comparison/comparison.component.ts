@@ -86,14 +86,39 @@ export class ComparisonComponent implements OnInit {
     });
   }
 
+
   approvePart(): void {
-    this.status = Status.Approved;
-    this.comparisonService.saveResult({ partId: this.partReferentialId, status: 'approved' });
+    if (this.status !== Status.Ready || !this.jobId) return;
+
+    this.comparisonService.saveResult({ 
+      jobId: +this.jobId, 
+      status: 'APPROVED' 
+    }).subscribe({
+      next: () => {
+        this.status = Status.Approved;
+        console.log('Inspeção APROVADA e registrada no banco para o Job:', this.jobId);
+      },
+      error: (err) => {
+        console.error('Falha ao registrar aprovação:', err);
+      }
+    });
   }
 
   rejectPart(): void {
-    this.status = Status.Rejected;
-    this.comparisonService.saveResult({ partId: this.partReferentialId, status: 'failed' });
+    if (this.status !== Status.Ready || !this.jobId) return;
+    
+    this.comparisonService.saveResult({ 
+      jobId: +this.jobId, 
+      status: 'REJECTED' 
+    }).subscribe({
+      next: () => {
+        this.status = Status.Rejected;
+        console.log('Inspeção REPROVADA e registrada no banco para o Job:', this.jobId);
+      },
+      error: (err) => {
+        console.error('Falha ao registrar reprovação:', err);
+      }
+    });
   }
 
   reboot(): void {
