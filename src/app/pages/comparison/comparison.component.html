@@ -1,75 +1,136 @@
 <div class="container">
   <div class="control-panel">
+
+    <!-- CARD: UPLOAD -->
     <div class="card">
       <h3>Upload de Imagens</h3>
+
       <form [formGroup]="uploadForm">
         <div class="form-group">
           <label for="imageFront">Imagem Frontal</label>
           <input type="file" id="imageFront" (change)="onFileSelected($event, 'imageFront')">
         </div>
+
         <div class="form-group">
           <label for="imageSide">Imagem Lateral</label>
           <input type="file" id="imageSide" (change)="onFileSelected($event, 'imageSide')">
         </div>
       </form>
-      <button (click)="generate3DModel()" [disabled]="uploadForm.invalid || status !== StatusEnum.Initial">
-        @if(status === StatusEnum.Processing) {
+
+      <button 
+        (click)="generate3DModel()" 
+        [disabled]="uploadForm.invalid || status !== StatusEnum.Initial"
+      >
+        @if (status === StatusEnum.Processing) {
           <span>Processando...</span>
         } @else {
           <span>Gerar Modelo 3D</span>
         }
       </button>
     </div>
+
+    <!-- CARD: CONTROLES -->
     <div class="card">
       <h3>Controles de Visualização</h3>
+
       <div class="form-group">
-        <label>Rotação X: </label>
+        <label>Rotação X:</label>
         <input type="range" min="0" max="360">
       </div>
+
       <div class="form-group">
-        <label>Rotação Y: </label>
+        <label>Rotação Y:</label>
         <input type="range" min="0" max="360">
       </div>
-       <div class="form-group">
+
+      <div class="form-group">
         <label>Zoom: {{ zoomValue$ | async }}</label>
         <input type="range" min="10" max="100" formControlName="zoom">
       </div>
     </div>
+
   </div>
 
+  <!-- MAIN PANEL -->
   <div class="main-panel">
+
     <div class="viewers">
+
+      <!-- VIEWER: REFERÊNCIA -->
       <div class="card viewer-card reference">
         <h3>Modelo de Referência</h3>
         <div class="viewer-content">
           <div class="placeholder">3D</div>
         </div>
       </div>
+
+      <!-- VIEWER: MODELO GERADO -->
       <div class="card viewer-card generated">
         <h3>Modelo Gerado</h3>
+
         <div class="viewer-content">
-          @if(status === StatusEnum.Processing || status === StatusEnum.Initial) {
+          @if (status === StatusEnum.Processing || status === StatusEnum.Initial) {
             <p>Aguardando geração do modelo</p>
           } @else {
             <div class="placeholder">3D</div>
           }
         </div>
       </div>
+
     </div>
 
+    <!-- ACTIONS + FEEDBACK -->
     <div class="actions-feedback">
+
       <div class="actions-buttons">
-        <button class="approve" (click)="approvePart()" [disabled]="status !== StatusEnum.Ready">✓ Aprovar Peça</button>
-        <button class="reject" (click)="rejectPart()" [disabled]="status !== StatusEnum.Ready">✗ Reprovar Peça</button>
+        <button 
+          class="approve" 
+          (click)="approvePart()" 
+          [disabled]="status !== StatusEnum.Ready"
+        >✓ Aprovar Peça</button>
+
+        <button 
+          class="reject" 
+          (click)="rejectPart()" 
+          [disabled]="status !== StatusEnum.Ready"
+        >✗ Reprovar Peça</button>
+
         <button class="reset" (click)="reboot()">↻ Reiniciar</button>
       </div>
-      
-      @if(status === StatusEnum.Approved) {
+
+      @if (status === StatusEnum.Approved) {
         <div class="feedback-banner approved">✓ Peça Aprovada</div>
       }
-      @if(status === StatusEnum.Rejected) {
-        <div class="feedback-banner rejected">✗ Peça Reprovada: A peça não atende aos padrões de qualidade.</div>
+
+      @if (status === StatusEnum.Rejected) {
+        <div class="feedback-banner rejected">
+          ✗ Peça Reprovada: A peça não atende aos padrões de qualidade.
+        </div>
       }
+
     </div>
+
+    <!-- 🔽 AQUI: ANÁLISE DE DEFEITOS ABAIXO DOS BOTÕES -->
+    <div class="card viewer-card ai-analysis mt-3" *ngIf="showAnalysis">
+      <h3>Análise de Defeitos (IA)</h3>
+
+      <div class="canvas-container" style="display: flex; gap: 20px; overflow-x: auto;">
+        <div>
+          <h4>Vista Frontal</h4>
+          <canvas #defectCanvasFront></canvas>
+        </div>
+
+        <div>
+          <h4>Vista Lateral</h4>
+          <canvas #defectCanvasSide></canvas>
+        </div>
+      </div>
+
+      <div class="analysis-summary mt-3">
+        <p><strong>Status:</strong> Análise Concluída</p>
+        <p><strong>Total de Defeitos:</strong> {{ totalDefects }}</p>
+      </div>
+    </div>
+
   </div>
 </div>
