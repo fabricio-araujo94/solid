@@ -19,11 +19,17 @@ export interface DefectResponse {
 }
 
 export interface JobResponse {
-  jobId: string;
+  id: number;  // Changed from jobId to id, matching ComparisonJob from backend
+  part_id: number;
+  status: string;
+  input_front_image_url: string;
+  input_side_image_url: string;
+  output_model_url: string | null;
+  created_at: string;
 }
 
 export interface JobStatusResponse {
-  status: 'processing' | 'complete' | 'failed';
+  status: 'pending' | 'processing' | 'complete' | 'failed';
   modelUrl?: string; 
 }
 
@@ -49,7 +55,9 @@ export class ComparisonService {
 
   saveResult(result: FinalResult): Observable<any> {
     const { jobId, status } = result;
-    return this.http.put(`${this.apiUrl}/compare/${jobId}/status`, null, { params: { new_status: status } });
+    return this.http.put(`${this.apiUrl}/compare/${jobId}/status`, {}, { 
+      params: { new_status: status } 
+    });
   }
 
   analyzeDefects(formData: FormData): Observable<DefectResponse> {

@@ -1,11 +1,34 @@
-import { Component, OnInit, inject, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { ComparisonService, DefectBox, JobStatusResponse } from '../../services/comparison.service';
-import { interval, startWith, switchMap, map, forkJoin } from 'rxjs';
+import { 
+  Component, 
+  OnInit, 
+  inject, 
+  ViewChild, 
+  ElementRef, 
+  ChangeDetectorRef 
+} from '@angular/core';
 
-// Enums e Tipos
+import { 
+  FormBuilder, 
+  FormGroup, 
+  FormsModule, 
+  ReactiveFormsModule, 
+  Validators 
+} from '@angular/forms';
+
+import { 
+  ComparisonService, 
+  DefectBox, 
+  JobStatusResponse } 
+from '../../services/comparison.service';
+  
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { interval, startWith, switchMap, map, forkJoin } from 'rxjs';
+import { Viewer3dComponent } from '../../components/viewer3d/viewer3d.component';
+import { PartsService } from '../../services/parts.service';
+
+
+// Enums and Types
 enum Status {
   Initial,
   Processing,
@@ -17,33 +40,34 @@ enum Status {
 @Component({
   selector: 'app-comparison',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, Viewer3dComponent],
   templateUrl: './comparison.component.html',
   styleUrls: ['./comparison.component.css']
 })
 export class ComparisonComponent implements OnInit {
-  // Injeção de Dependências
+  // Dependency Injection
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly comparisonService = inject(ComparisonService);
+  private readonly partsService = inject(PartsService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   // ViewChildren
   @ViewChild('defectCanvasFront') defectCanvasFront!: ElementRef<HTMLCanvasElement>;
   @ViewChild('defectCanvasSide') defectCanvasSide!: ElementRef<HTMLCanvasElement>;
 
-  // Propriedades Públicas - Estado da Análise
+  // Public Properties - Analysis State
   public status = Status.Initial;
   public StatusEnum = Status;
   public showAnalysis = false;
   public analysisTime = 0;
 
-  // Propriedades Públicas - Defeitos
+  // Public Properties - Defects
   public defectsFront: DefectBox[] = [];
   public defectsSide: DefectBox[] = [];
   public totalDefects = 0;
 
-  // Propriedades Públicas - Formulário e Zoom
+  // Public Properties - Form and Zoom
   public uploadForm: FormGroup;
   public zoom$ = this.fb.control(50);
   public zoomValue$ = this.zoom$.valueChanges.pipe(
@@ -51,7 +75,12 @@ export class ComparisonComponent implements OnInit {
     map(value => `${value}%`)
   );
 
-  // Propriedades Privadas
+  public rotationX = 30;
+  public rotationY = 45;
+  public referenceModelUrl: string | null = "http://localhost:8000/uploads/models/job_2.stl";
+  public generatedModelUrl: string | null = null; 
+
+  // Private Properties
   private partReferentialId!: number;
   private jobId: string | null = null;
 
@@ -67,9 +96,17 @@ export class ComparisonComponent implements OnInit {
   // Lifecycle Hooks
   ngOnInit(): void {
     this.partReferentialId = +this.route.snapshot.params['id'];
+  
+    // Load the Reference Part to get its 3D Model
+    this.partsService.getPart(this.partReferentialId).subscribe(part => {
+        // If the part has a registered model, we use it
+        if (part.model_3d_url) {
+            this.referenceModelUrl = part.model_3d_url;
+        }
+    });
   }
 
-  // Métodos Públicos - Seleção de Arquivo
+  // Public Methods - File Selection
   onFileSelected(event: Event, controlName: string): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
@@ -77,25 +114,27 @@ export class ComparisonComponent implements OnInit {
     }
   }
 
-  // Métodos Públicos - Geração de Modelo 3D
+  // === PUBLIC METHODS - MAIN FLOW ===
   generate3DModel(): void {
     if (this.uploadForm.invalid) return;
 
     this.status = Status.Processing;
     this.showAnalysis = false;
     this.resetDefects();
+    this.generatedModelUrl = null; // Clears previous generated model
+    this.jobId = null;
 
     const frontFile = this.uploadForm.get('imageFront')?.value;
     const sideFile = this.uploadForm.get('imageSide')?.value;
-
-    // Análise de Defeitos em Paralelo
+    
+    // 1. Execute Defect Analysis (AI/CV)
     this.analyzeDefects(frontFile, sideFile);
 
-    // Geração do Modelo 3D
+    // 2. Execute 3D Generation
     this.generate3DModelRequest(frontFile, sideFile);
   }
 
-  // Métodos Públicos - Aprovação/Rejeição
+  // Public Methods - Approval/Rejection
   approvePart(): void {
     if (this.status !== Status.Ready || !this.jobId) return;
 
@@ -105,9 +144,9 @@ export class ComparisonComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.status = Status.Approved;
-        console.log('Inspeção APROVADA');
+        console.log('Inspection APPROVED');
       },
-      error: (err) => console.error('Falha ao registrar aprovação:', err)
+      error: (err) => console.error('Failed to register approval:', err)
     });
   }
 
@@ -120,9 +159,9 @@ export class ComparisonComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.status = Status.Rejected;
-        console.log('Inspeção REPROVADA');
+        console.log('Inspection REJECTED');
       },
-      error: (err) => console.error('Falha ao registrar reprovação:', err)
+      error: (err) => console.error('Failed to register rejection:', err)
     });
   }
 
@@ -130,10 +169,12 @@ export class ComparisonComponent implements OnInit {
     this.status = Status.Initial;
     this.uploadForm.reset();
     this.jobId = null;
+    this.generatedModelUrl = null;
     this.resetDefects();
   }
 
-  // Métodos Privados - Análise de Defeitos
+  // === PRIVATE METHODS - COMPARISON FLOW ===
+
   private analyzeDefects(frontFile: File, sideFile: File): void {
     const analysisStartTime = performance.now();
     const formDataFront = new FormData();
@@ -157,24 +198,33 @@ export class ComparisonComponent implements OnInit {
         this.showAnalysis = true;
         this.cdr.detectChanges();
 
-        // Pequeno delay para garantir que o Canvas esteja pronto
+        // Small delay to ensure Canvas is ready
         setTimeout(() => {
           this.drawCanvases(frontFile, sideFile);
         }, 50);
       },
-      error: (err) => console.error('Erro na análise de IA:', err)
+      error: (err) => console.error('Error in AI analysis:', err)
     });
   }
 
+  // comparison.component.ts
+
   private generate3DModelRequest(frontFile: File, sideFile: File): void {
     const formData = new FormData();
-    formData.append('imagem_frontal', frontFile);
-    formData.append('imagem_lateral', sideFile);
-    formData.append('peca_referencia_id', this.partReferentialId.toString());
+    
+    // These names MUST match the Python function parameters exactly
+    formData.append('front_image', frontFile); 
+    formData.append('side_image', sideFile);
+    formData.append('reference_part_id', this.partReferentialId.toString());
+
+    // --- DEBUG STEP: CHECK WHAT IS BEING SENT ---
+    const entries: Array<[string, any]> = [];
+    formData.forEach((value, key) => entries.push([key, value]));
+    console.log('FormData Contents sent to /api/compare/ (Angular):', entries);
 
     this.comparisonService.startModelGeneration(formData).pipe(
       switchMap(response => {
-        this.jobId = response.jobId;
+        this.jobId = response.id.toString();  // Backend returns 'id', not 'jobId'
         return interval(2000).pipe(
           startWith(0),
           switchMap(() => this.comparisonService.checkJobStatus(this.jobId!))
@@ -184,27 +234,30 @@ export class ComparisonComponent implements OnInit {
       next: (statusResponse: JobStatusResponse) => {
         if (statusResponse.status === 'complete') {
           this.status = Status.Ready;
-          console.log('Modelo gerado com sucesso!', statusResponse.modelUrl);
+          // Captures the URL of the model generated by the Backend
+          this.generatedModelUrl = statusResponse.modelUrl || null;
+          console.log('Model generated:', this.generatedModelUrl);
         } else if (statusResponse.status === 'failed') {
           this.reboot();
         }
       },
-      error: (err) => console.error('Erro na geração do modelo 3D:', err)
+      error: (err) => console.error('Error generating 3D model:', err)
     });
   }
 
-  // Métodos Privados - Renderização de Canvas
+  // === PRIVATE METHODS - RENDERING ===
+
   private drawCanvases(frontFile: File, sideFile: File): void {
     if (this.defectCanvasFront) {
       this.drawResults(this.defectCanvasFront, frontFile, this.defectsFront);
     } else {
-      console.warn('Canvas Frontal não encontrado!');
+      console.warn('Front Canvas not found!');
     }
 
     if (this.defectCanvasSide) {
       this.drawResults(this.defectCanvasSide, sideFile, this.defectsSide);
     } else {
-      console.warn('Canvas Lateral não encontrado!');
+      console.warn('Side Canvas not found!');
     }
   }
 
@@ -246,10 +299,10 @@ export class ComparisonComponent implements OnInit {
     canvas.width = displayWidth;
     canvas.height = (img.height * ratio) || 150;
 
-    // Desenhar Imagem
+    // Draw Image
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    // Desenhar Bounding Boxes
+    // Draw Bounding Boxes
     ctx.strokeStyle = 'red';
     ctx.lineWidth = 2;
     ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
@@ -269,7 +322,7 @@ export class ComparisonComponent implements OnInit {
     });
   }
 
-  // Métodos Privados - Utilitários
+  // Private Methods - Utility
   private resetDefects(): void {
     this.defectsFront = [];
     this.defectsSide = [];

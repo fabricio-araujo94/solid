@@ -9,6 +9,7 @@ export interface Part {
   sku: string;
   side_image_url: string;
   front_image_url: string;
+  model_3d_url: string;
 }
 
 export interface JobHistory {

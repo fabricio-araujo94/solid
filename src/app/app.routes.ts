@@ -45,7 +45,7 @@ export const routes: Routes = [
     canActivate: [authGuard] 
   },
   {
-    path: 'compare-models',
+    path: 'compare-models/:id',
     component: ComparisonComponent,
     canActivate: [authGuard] 
   },

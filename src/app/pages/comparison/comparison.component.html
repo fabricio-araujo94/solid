@@ -34,13 +34,13 @@
       <h3>Controles de Visualização</h3>
 
       <div class="form-group">
-        <label>Rotação X:</label>
-        <input type="range" min="0" max="360">
+        <label>Rotação X: {{ rotationX }}°</label>
+        <input type="range" min="0" max="360" [(ngModel)]="rotationX">
       </div>
 
       <div class="form-group">
-        <label>Rotação Y:</label>
-        <input type="range" min="0" max="360">
+        <label>Rotação Y: {{ rotationY }}°</label>
+        <input type="range" min="0" max="360" [(ngModel)]="rotationY">
       </div>
 
       <div class="form-group">
@@ -59,23 +59,41 @@
       <!-- VIEWER: REFERÊNCIA -->
       <div class="card viewer-card reference">
         <h3>Modelo de Referência</h3>
-        <div class="viewer-content">
-          <div class="placeholder">3D</div>
+        <div class="viewer-content" style="padding: 0; height: 300px;">
+          @if (referenceModelUrl) {
+            <app-viewer3d 
+              [modelUrl]="referenceModelUrl"
+              [rotationX]="rotationX"
+              [rotationY]="rotationY"
+              [zoom]="uploadForm.get('zoom')?.value"
+              > </app-viewer3d>
+          } @else {
+             <div class="placeholder">Sem modelo de referência cadastrado</div>
+          }
         </div>
       </div>
 
       <!-- VIEWER: MODELO GERADO -->
       <div class="card viewer-card generated">
         <h3>Modelo Gerado</h3>
-
-        <div class="viewer-content">
-          @if (status === StatusEnum.Processing || status === StatusEnum.Initial) {
-            <p>Aguardando geração do modelo</p>
+        <div class="viewer-content" style="padding: 0; height: 300px;">
+          
+          @if(status === StatusEnum.Processing || status === StatusEnum.Initial) {
+            <div class="placeholder-text">
+               {{ status === StatusEnum.Processing ? 'Gerando geometria...' : 'Aguardando início' }}
+            </div>
+          } @else if (generatedModelUrl) {
+             <app-viewer3d 
+              [modelUrl]="generatedModelUrl"
+              [rotationX]="rotationX"
+              [rotationY]="rotationY"
+              [zoom]="uploadForm.get('zoom')?.value"
+              > </app-viewer3d>
           } @else {
-            <div class="placeholder">3D</div>
+             <div class="placeholder">Erro ao carregar modelo</div>
           }
+
         </div>
-      </div>
 
     </div>
 
