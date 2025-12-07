@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import * as THREE from 'three';
 import { ModelLoaderFactory } from './model-loader.factory';
-import { STLLoader } from 'three-stdlib';
+import { STLLoader, OrbitControls } from 'three-stdlib';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class ThreeJsFacadeService {
   private modelLoaderFactory = inject(ModelLoaderFactory);
 
@@ -12,6 +12,7 @@ export class ThreeJsFacadeService {
   private renderer!: THREE.WebGLRenderer;
   private mesh: THREE.Mesh | null = null;
   private animationId: number | null = null;
+  private controls: any = null;
 
   public isLoading = false;
 
@@ -32,6 +33,19 @@ export class ThreeJsFacadeService {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(width, height);
     container.appendChild(this.renderer.domElement);
+
+    // Add orbit controls to allow rotating/panning/zooming with mouse
+    try {
+      this.controls = new (OrbitControls as any)(this.camera, this.renderer.domElement);
+      this.controls.enableDamping = true;
+      this.controls.dampingFactor = 0.1;
+      this.controls.screenSpacePanning = false;
+      this.controls.minDistance = 10;
+      this.controls.maxDistance = 2000;
+    } catch (e) {
+      console.warn('OrbitControls not available:', e);
+      this.controls = null;
+    }
 
     const ambientLight = new THREE.AmbientLight(0x404040, 2);
     this.scene.add(ambientLight);
@@ -84,14 +98,41 @@ export class ThreeJsFacadeService {
   }
 
   private createMeshFromGeometry(geometry: THREE.BufferGeometry, color: number) {
-    const material = new THREE.MeshPhongMaterial({ color, specular: 0x111111, shininess: 200 });
+    // Ensure geometry has normals for correct lighting
+    try {
+      const hasNormals = !!geometry.getAttribute('normal');
+      if (!hasNormals) {
+        geometry.computeVertexNormals();
+      }
+    } catch (e) {
+      // computeVertexNormals may throw on malformed geometries
+      console.warn('Failed to compute normals:', e);
+    }
+
+    // Compute bounding box and center geometry robustly
+    try {
+      geometry.computeBoundingBox();
+      const box = geometry.boundingBox;
+      if (box) {
+        const center = box.getCenter(new THREE.Vector3());
+        // translate so object is centered at origin
+        geometry.translate(-center.x, -center.y, -center.z);
+      }
+    } catch (e) {
+      console.warn('Failed to compute/center bounding box:', e);
+    }
+
+    const material = new THREE.MeshPhongMaterial({ color, specular: 0x111111, shininess: 200, side: THREE.DoubleSide });
     this.mesh = new THREE.Mesh(geometry, material);
 
-    geometry.computeBoundingBox?.();
-    (geometry as any).center?.();
-
+    // Many STLs are oriented lying down; rotate to display upright
     this.mesh.rotation.x = -Math.PI / 2;
+
     this.scene.add(this.mesh);
+
+    // Ensure bounding sphere exists for camera framing
+    try { geometry.computeBoundingSphere(); } catch {}
+
     this.fitCameraToSelection(this.camera, [this.mesh]);
   }
 
@@ -129,6 +170,7 @@ export class ThreeJsFacadeService {
 
   private animate(): void {
     this.animationId = requestAnimationFrame(() => this.animate());
+    if (this.controls && typeof this.controls.update === 'function') this.controls.update();
     if (this.renderer && this.scene && this.camera) {
       this.renderer.render(this.scene, this.camera);
     }

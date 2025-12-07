@@ -11,6 +11,11 @@ import { ThreeJsFacadeService } from '../../services/threejs-facade.service';
   selector: 'app-viewer3d',
   standalone: true,
   imports: [CommonModule],
+  providers: [
+    // provide a distinct ThreeJsFacadeService instance per component
+    // so each viewer has its own scene, renderer and controls
+    ThreeJsFacadeService
+  ],
   templateUrl: './viewer3d.component.html',
   styleUrls: ['./viewer3d.component.css']
 })

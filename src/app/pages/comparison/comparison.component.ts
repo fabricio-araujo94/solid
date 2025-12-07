@@ -67,16 +67,8 @@ export class ComparisonComponent implements OnInit {
   public defectsSide: DefectBox[] = [];
   public totalDefects = 0;
 
-  // Public Properties - Form and Zoom
+  // Public Properties - Form
   public uploadForm: FormGroup;
-  public zoom$ = this.fb.control(50);
-  public zoomValue$ = this.zoom$.valueChanges.pipe(
-    startWith(this.zoom$.value),
-    map(value => `${value}%`)
-  );
-
-  public rotationX = 30;
-  public rotationY = 45;
   public referenceModelUrl: string | null = "http://localhost:8000/uploads/models/job_2.stl";
   public generatedModelUrl: string | null = null; 
 
@@ -88,8 +80,7 @@ export class ComparisonComponent implements OnInit {
   constructor() {
     this.uploadForm = this.fb.group({
       imageFront: [null, Validators.required],
-      imageSide: [null, Validators.required],
-      zoom: this.zoom$
+      imageSide: [null, Validators.required]
     });
   }
 
@@ -171,6 +162,7 @@ export class ComparisonComponent implements OnInit {
     this.jobId = null;
     this.generatedModelUrl = null;
     this.resetDefects();
+    console.log("Eu estive aqui");
   }
 
   // === PRIVATE METHODS - COMPARISON FLOW ===
