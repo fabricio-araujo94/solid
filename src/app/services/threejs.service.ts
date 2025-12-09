@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import * as THREE from 'three';
-import { ModelLoaderFactory } from './model-loader.factory';
-import { STLLoader, OrbitControls } from 'three-stdlib';
+import { ModelLoaderService } from './model-loader.service';
+import { OrbitControls } from 'three-stdlib';
 
 @Injectable()
-export class ThreeJsFacadeService {
-  private modelLoaderFactory = inject(ModelLoaderFactory);
+export class ThreeJsService {
+  private ModelLoaderService = inject(ModelLoaderService);
 
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
@@ -63,59 +63,37 @@ export class ThreeJsFacadeService {
 
   loadModel(url: string, color: number = 0x2ecc71): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!this.scene) return reject(new Error('ThreeJsFacade not initialized'));
+      if (!this.scene) return reject(new Error('ThreeJs not initialized'));
       this.clearScene();
       this.isLoading = true;
 
-      const loader = this.modelLoaderFactory.getLoader(url);
-      if (loader) {
-        loader.load(url).then((geometry) => {
-          this.createMeshFromGeometry(geometry, color);
-          this.isLoading = false;
-          resolve();
-        }).catch((err) => {
-          this.isLoading = false;
-          reject(err);
-        });
-      } else {
-        // fallback to STLLoader
-        const fallback = new STLLoader();
-        fallback.load(
-          url,
-          (geometry) => {
-            this.createMeshFromGeometry(geometry as THREE.BufferGeometry, color);
-            this.isLoading = false;
-            resolve();
-          },
-          undefined,
-          (err) => {
-            this.isLoading = false;
-            reject(err);
-          }
-        );
-      }
+      const loader = this.ModelLoaderService.getLoader(url);
+      loader.load(url).then((geometry) => {
+        this.createMeshFromGeometry(geometry, color);
+        this.isLoading = false;
+        resolve();
+      }).catch((err) => {
+        this.isLoading = false;
+        reject(err);
+      });
     });
   }
 
   private createMeshFromGeometry(geometry: THREE.BufferGeometry, color: number) {
-    // Ensure geometry has normals for correct lighting
     try {
       const hasNormals = !!geometry.getAttribute('normal');
       if (!hasNormals) {
         geometry.computeVertexNormals();
       }
     } catch (e) {
-      // computeVertexNormals may throw on malformed geometries
       console.warn('Failed to compute normals:', e);
     }
 
-    // Compute bounding box and center geometry robustly
     try {
       geometry.computeBoundingBox();
       const box = geometry.boundingBox;
       if (box) {
         const center = box.getCenter(new THREE.Vector3());
-        // translate so object is centered at origin
         geometry.translate(-center.x, -center.y, -center.z);
       }
     } catch (e) {
@@ -124,14 +102,10 @@ export class ThreeJsFacadeService {
 
     const material = new THREE.MeshPhongMaterial({ color, specular: 0x111111, shininess: 200, side: THREE.DoubleSide });
     this.mesh = new THREE.Mesh(geometry, material);
-
-    // Many STLs are oriented lying down; rotate to display upright
     this.mesh.rotation.x = -Math.PI / 2;
-
     this.scene.add(this.mesh);
 
-    // Ensure bounding sphere exists for camera framing
-    try { geometry.computeBoundingSphere(); } catch {}
+    try { geometry.computeBoundingSphere(); } catch { }
 
     this.fitCameraToSelection(this.camera, [this.mesh]);
   }
