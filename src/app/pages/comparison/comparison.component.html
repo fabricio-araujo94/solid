@@ -29,25 +29,7 @@
       </button>
     </div>
 
-    <!-- CARD: CONTROLES -->
-    <div class="card">
-      <h3>Controles de Visualização</h3>
-
-      <div class="form-group">
-        <label>Rotação X: {{ rotationX }}°</label>
-        <input type="range" min="0" max="360" [(ngModel)]="rotationX">
-      </div>
-
-      <div class="form-group">
-        <label>Rotação Y: {{ rotationY }}°</label>
-        <input type="range" min="0" max="360" [(ngModel)]="rotationY">
-      </div>
-
-      <div class="form-group">
-        <label>Zoom: {{ zoomValue$ | async }}</label>
-        <input type="range" min="10" max="100" formControlName="zoom">
-      </div>
-    </div>
+    <!-- Controls removed: use mouse (OrbitControls) inside the 3D viewer -->
 
   </div>
 
@@ -61,12 +43,7 @@
         <h3>Modelo de Referência</h3>
         <div class="viewer-content" style="padding: 0; height: 300px;">
           @if (referenceModelUrl) {
-            <app-viewer3d 
-              [modelUrl]="referenceModelUrl"
-              [rotationX]="rotationX"
-              [rotationY]="rotationY"
-              [zoom]="uploadForm.get('zoom')?.value"
-              > </app-viewer3d>
+            <app-viewer3d [modelUrl]="referenceModelUrl"> </app-viewer3d>
           } @else {
              <div class="placeholder">Sem modelo de referência cadastrado</div>
           }
@@ -83,12 +60,7 @@
                {{ status === StatusEnum.Processing ? 'Gerando geometria...' : 'Aguardando início' }}
             </div>
           } @else if (generatedModelUrl) {
-             <app-viewer3d 
-              [modelUrl]="generatedModelUrl"
-              [rotationX]="rotationX"
-              [rotationY]="rotationY"
-              [zoom]="uploadForm.get('zoom')?.value"
-              > </app-viewer3d>
+             <app-viewer3d [modelUrl]="generatedModelUrl"> </app-viewer3d>
           } @else {
              <div class="placeholder">Erro ao carregar modelo</div>
           }
@@ -127,8 +99,10 @@
       }
 
     </div>
-
-    <!-- 🔽 AQUI: ANÁLISE DE DEFEITOS ABAIXO DOS BOTÕES -->
+    
+  </div>
+  
+  @if(totalDefects > 0) {
     <div class="card viewer-card ai-analysis mt-3" *ngIf="showAnalysis">
       <h3>Análise de Defeitos (IA)</h3>
 
@@ -149,6 +123,5 @@
         <p><strong>Total de Defeitos:</strong> {{ totalDefects }}</p>
       </div>
     </div>
-
-  </div>
+  }
 </div>
