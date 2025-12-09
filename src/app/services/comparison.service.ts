@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { backend_api } from '../../environments/backend-api';
+import { API_URL } from '../tokens/api.token';
 
 export interface DefectBox {
   x: number;
@@ -43,7 +43,7 @@ export interface FinalResult {
 })
 export class ComparisonService {
   private http = inject(HttpClient);
-  private apiUrl = `${backend_api.apiUrl}/api`;
+  private apiUrl = `${inject(API_URL)}/api`;
 
   startModelGeneration(formData: FormData): Observable<JobResponse> {
     return this.http.post<JobResponse>(`${this.apiUrl}/compare/`, formData);

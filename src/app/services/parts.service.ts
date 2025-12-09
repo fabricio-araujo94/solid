@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { backend_api } from '../../environments/backend-api';
+import { API_URL } from '../tokens/api.token';
 
 export interface Part {
   id: number;
@@ -34,7 +34,7 @@ export interface ComparisonJob {
 })
 export class PartsService {
   private http = inject(HttpClient);
-  private apiUrl = `${backend_api.apiUrl}/api/parts/`;
+  private apiUrl = `${inject(API_URL)}/api/parts/`;
 
   constructor() { }
 
