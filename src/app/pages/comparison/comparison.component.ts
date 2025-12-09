@@ -1,32 +1,32 @@
-import { 
-  Component, 
-  OnInit, 
-  inject, 
-  ViewChild, 
-  ElementRef, 
-  ChangeDetectorRef 
+import {
+  Component,
+  OnInit,
+  inject,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef
 } from '@angular/core';
 
-import { 
-  FormBuilder, 
-  FormGroup, 
-  FormsModule, 
-  ReactiveFormsModule, 
-  Validators 
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
 } from '@angular/forms';
 
-import { 
-  ComparisonService, 
-  DefectBox, 
-  JobStatusResponse } 
-from '../../services/comparison.service';
-  
+import {
+  ComparisonService,
+  DefectBox,
+  JobStatusResponse
+} from '../../services/comparison.service';
+
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { interval, startWith, switchMap, map, forkJoin } from 'rxjs';
+import { interval, startWith, switchMap, map, forkJoin, takeWhile } from 'rxjs';
 import { Viewer3dComponent } from '../../components/viewer3d/viewer3d.component';
 import { PartsService } from '../../services/parts.service';
-
+import { CanvasDrawerService } from '../../services/canvas-drawer.service';
 
 // Enums and Types
 enum Status {
@@ -45,38 +45,32 @@ enum Status {
   styleUrls: ['./comparison.component.css']
 })
 export class ComparisonComponent implements OnInit {
-  // Dependency Injection
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly comparisonService = inject(ComparisonService);
   private readonly partsService = inject(PartsService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly canvasDrawer = inject(CanvasDrawerService);
 
-  // ViewChildren
   @ViewChild('defectCanvasFront') defectCanvasFront!: ElementRef<HTMLCanvasElement>;
   @ViewChild('defectCanvasSide') defectCanvasSide!: ElementRef<HTMLCanvasElement>;
 
-  // Public Properties - Analysis State
   public status = Status.Initial;
   public StatusEnum = Status;
   public showAnalysis = false;
   public analysisTime = 0;
 
-  // Public Properties - Defects
   public defectsFront: DefectBox[] = [];
   public defectsSide: DefectBox[] = [];
   public totalDefects = 0;
 
-  // Public Properties - Form
   public uploadForm: FormGroup;
-  public referenceModelUrl: string | null = "http://localhost:8000/uploads/models/job_2.stl";
-  public generatedModelUrl: string | null = null; 
+  public referenceModelUrl: string | null = null;
+  public generatedModelUrl: string | null = null;
 
-  // Private Properties
   private partReferentialId!: number;
   private jobId: string | null = null;
 
-  // Constructor
   constructor() {
     this.uploadForm = this.fb.group({
       imageFront: [null, Validators.required],
@@ -84,16 +78,12 @@ export class ComparisonComponent implements OnInit {
     });
   }
 
-  // Lifecycle Hooks
   ngOnInit(): void {
     this.partReferentialId = +this.route.snapshot.params['id'];
-  
-    // Load the Reference Part to get its 3D Model
     this.partsService.getPart(this.partReferentialId).subscribe(part => {
-        // If the part has a registered model, we use it
-        if (part.model_3d_url) {
-            this.referenceModelUrl = part.model_3d_url;
-        }
+      if (part.model_3d_url) {
+        this.referenceModelUrl = part.model_3d_url;
+      }
     });
   }
 
@@ -105,23 +95,20 @@ export class ComparisonComponent implements OnInit {
     }
   }
 
-  // === PUBLIC METHODS - MAIN FLOW ===
+  // Public Methods - main flow
   generate3DModel(): void {
     if (this.uploadForm.invalid) return;
 
     this.status = Status.Processing;
     this.showAnalysis = false;
     this.resetDefects();
-    this.generatedModelUrl = null; // Clears previous generated model
+    this.generatedModelUrl = null;
     this.jobId = null;
 
     const frontFile = this.uploadForm.get('imageFront')?.value;
     const sideFile = this.uploadForm.get('imageSide')?.value;
-    
-    // 1. Execute Defect Analysis (AI/CV)
-    this.analyzeDefects(frontFile, sideFile);
 
-    // 2. Execute 3D Generation
+    this.analyzeDefects(frontFile, sideFile);
     this.generate3DModelRequest(frontFile, sideFile);
   }
 
@@ -165,8 +152,7 @@ export class ComparisonComponent implements OnInit {
     console.log("Eu estive aqui");
   }
 
-  // === PRIVATE METHODS - COMPARISON FLOW ===
-
+  // Private Methods - Comparison Flow
   private analyzeDefects(frontFile: File, sideFile: File): void {
     const analysisStartTime = performance.now();
     const formDataFront = new FormData();
@@ -199,13 +185,12 @@ export class ComparisonComponent implements OnInit {
     });
   }
 
-  // comparison.component.ts
-
+  // Private Methods - 3D Model Flow
   private generate3DModelRequest(frontFile: File, sideFile: File): void {
     const formData = new FormData();
-    
+
     // These names MUST match the Python function parameters exactly
-    formData.append('front_image', frontFile); 
+    formData.append('front_image', frontFile);
     formData.append('side_image', sideFile);
     formData.append('reference_part_id', this.partReferentialId.toString());
 
@@ -219,7 +204,8 @@ export class ComparisonComponent implements OnInit {
         this.jobId = response.id.toString();  // Backend returns 'id', not 'jobId'
         return interval(2000).pipe(
           startWith(0),
-          switchMap(() => this.comparisonService.checkJobStatus(this.jobId!))
+          switchMap(() => this.comparisonService.checkJobStatus(this.jobId!)),
+          takeWhile((res) => res.status !== 'complete' && res.status !== 'failed', true) // 'true' includes the last emission (complete/failed)
         );
       })
     ).subscribe({
@@ -238,80 +224,18 @@ export class ComparisonComponent implements OnInit {
   }
 
   // === PRIVATE METHODS - RENDERING ===
-
   private drawCanvases(frontFile: File, sideFile: File): void {
     if (this.defectCanvasFront) {
-      this.drawResults(this.defectCanvasFront, frontFile, this.defectsFront);
+      this.canvasDrawer.draw(this.defectCanvasFront, frontFile, this.defectsFront);
     } else {
       console.warn('Front Canvas not found!');
     }
 
     if (this.defectCanvasSide) {
-      this.drawResults(this.defectCanvasSide, sideFile, this.defectsSide);
+      this.canvasDrawer.draw(this.defectCanvasSide, sideFile, this.defectsSide);
     } else {
       console.warn('Side Canvas not found!');
     }
-  }
-
-  private drawResults(
-    canvasRef: ElementRef<HTMLCanvasElement>,
-    imageFile: File,
-    defects: DefectBox[]
-  ): void {
-    if (!canvasRef) return;
-
-    const canvas = canvasRef.nativeElement;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const img = new Image();
-    const reader = new FileReader();
-
-    reader.onload = (e: any) => {
-      img.src = e.target.result;
-      img.onload = () => {
-        this.renderCanvas(canvas, ctx, img, defects);
-      };
-    };
-
-    if (imageFile) {
-      reader.readAsDataURL(imageFile);
-    }
-  }
-
-  private renderCanvas(
-    canvas: HTMLCanvasElement,
-    ctx: CanvasRenderingContext2D,
-    img: HTMLImageElement,
-    defects: DefectBox[]
-  ): void {
-    const displayWidth = 300;
-    const ratio = displayWidth / img.width;
-
-    canvas.width = displayWidth;
-    canvas.height = (img.height * ratio) || 150;
-
-    // Draw Image
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-    // Draw Bounding Boxes
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-    ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
-
-    (defects || []).forEach(defect => {
-      const x = defect.x * ratio;
-      const y = defect.y * ratio;
-      const w = defect.width * ratio;
-      const h = defect.height * ratio;
-
-      ctx.strokeRect(x, y, w, h);
-      ctx.fillRect(x, y, w, h);
-
-      ctx.fillStyle = 'white';
-      ctx.font = '10px Arial';
-      ctx.fillText(defect.type.toUpperCase(), x + 2, y + 10);
-    });
   }
 
   // Private Methods - Utility
