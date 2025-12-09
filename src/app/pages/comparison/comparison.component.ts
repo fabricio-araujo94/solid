@@ -143,6 +143,32 @@ export class ComparisonComponent implements OnInit {
     });
   }
 
+  saveAsSample(): void {
+    if (this.status !== Status.Ready) return;
+
+    const frontFile = this.uploadForm.get('imageFront')?.value;
+    const sideFile = this.uploadForm.get('imageSide')?.value;
+
+    // Naming strategy: Sample - [Date]
+    const name = `Amostra - ${new Date().toLocaleTimeString()}`;
+    // SKU strategy: SMP-[Random]
+    const sku = `SMP-${Math.floor(Math.random() * 100000)}`;
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('sku', sku);
+    formData.append('side_image', sideFile);
+    formData.append('front_image', frontFile);
+    formData.append('part_type', 'sample');
+
+    this.partsService.addPart(formData).subscribe({
+      next: () => {
+        alert('Amostra salva com sucesso!');
+      },
+      error: (err) => console.error('Erro ao salvar amostra:', err)
+    });
+  }
+
   reboot(): void {
     this.status = Status.Initial;
     this.uploadForm.reset();

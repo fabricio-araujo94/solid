@@ -86,6 +86,13 @@
         >✗ Reprovar Peça</button>
 
         <button class="reset" (click)="reboot()">↻ Reiniciar</button>
+
+        <button 
+          class="save-sample" 
+          (click)="saveAsSample()" 
+          [disabled]="status !== StatusEnum.Ready"
+          style="background-color: #ffd700; color: #000;"
+        >💾 Salvar como Amostra</button>
       </div>
 
       @if (status === StatusEnum.Approved) {
