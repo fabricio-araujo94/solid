@@ -30,12 +30,12 @@ export interface JobResponse {
 
 export interface JobStatusResponse {
   status: 'pending' | 'processing' | 'complete' | 'failed';
-  modelUrl?: string; 
+  modelUrl?: string;
 }
 
 export interface FinalResult {
-    jobId: number;
-    status: 'APPROVED' | 'REJECTED'; 
+  jobId: number;
+  status: 'APPROVED' | 'REJECTED';
 }
 
 @Injectable({
@@ -43,10 +43,10 @@ export interface FinalResult {
 })
 export class ComparisonService {
   private http = inject(HttpClient);
-  private apiUrl = `${backend_api.apiUrl}/api`; 
+  private apiUrl = `${backend_api.apiUrl}/api`;
 
   startModelGeneration(formData: FormData): Observable<JobResponse> {
-    return this.http.post<JobResponse>(`${this.apiUrl}/compare`, formData);
+    return this.http.post<JobResponse>(`${this.apiUrl}/compare/`, formData);
   }
 
   checkJobStatus(jobId: string): Observable<JobStatusResponse> {
@@ -55,8 +55,8 @@ export class ComparisonService {
 
   saveResult(result: FinalResult): Observable<any> {
     const { jobId, status } = result;
-    return this.http.put(`${this.apiUrl}/compare/${jobId}/status`, {}, { 
-      params: { new_status: status } 
+    return this.http.put(`${this.apiUrl}/compare/${jobId}/status`, {}, {
+      params: { new_status: status }
     });
   }
 

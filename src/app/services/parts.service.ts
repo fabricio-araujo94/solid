@@ -9,7 +9,7 @@ export interface Part {
   sku: string;
   side_image_url: string;
   front_image_url: string;
-  model_3d_url: string;
+  model_3d_url: string | null;
 }
 
 export interface JobHistory {
@@ -25,7 +25,7 @@ export interface ComparisonJob {
   status: string;
   input_front_image_url: string;
   input_side_image_url: string;
-  output_model_url: string | null; 
+  output_model_url: string | null;
   created_at: string;
 }
 
