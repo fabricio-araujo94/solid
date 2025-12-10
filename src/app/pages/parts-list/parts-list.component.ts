@@ -17,7 +17,10 @@ export class PartsListComponent implements OnInit {
 
   public parts$!: Observable<Part[]>;
 
+  public selectedPartId: number | null = null;
+
   ngOnInit(): void {
+    this.selectedPartId = this.partsService.getSelectedPartForComparison();
     this.parts$ = this.refreshList.pipe(
       switchMap(() => this.partsService.getParts())
     );
@@ -35,5 +38,10 @@ export class PartsListComponent implements OnInit {
         error: (err) => console.error('Erro ao excluir peça:', err)
       });
     }
+  }
+
+  onSelect(part: Part): void {
+    this.partsService.selectPartForComparison(part.id);
+    this.selectedPartId = part.id;
   }
 }

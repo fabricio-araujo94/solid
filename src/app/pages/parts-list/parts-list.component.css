@@ -16,8 +16,15 @@
   margin-bottom: 30px;
 }
 
-.page-header h2 { margin: 0; font-size: 24px; }
-.page-header p { margin: 5px 0 0; color: #bdc3c7; }
+.page-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.page-header p {
+  margin: 5px 0 0;
+  color: #bdc3c7;
+}
 
 .add-button {
   background-color: #2ecc71;
@@ -41,7 +48,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   padding: 15px;
   text-align: left;
   border-bottom: 1px solid #ecf0f1;
@@ -71,7 +79,8 @@ th {
 }
 
 .actions-cell {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
   gap: 10px;
 }
 
@@ -84,10 +93,19 @@ th {
   cursor: pointer;
 }
 
-.edit-button { background-color: #f39c12; }
-.delete-button { background-color: #e74c3c; }
+.edit-button {
+  background-color: #f39c12;
+}
 
-.history-button { 
+.edit-button.selected {
+  background-color: #09ff00;
+}
+
+.delete-button {
+  background-color: #e74c3c;
+}
+
+.history-button {
   background-color: #3498db;
   border: none;
   padding: 8px 12px;
@@ -97,7 +115,8 @@ th {
   cursor: pointer;
 }
 
-.empty-message, .loading-message {
+.empty-message,
+.loading-message {
   text-align: center;
   padding: 50px;
   color: #777;

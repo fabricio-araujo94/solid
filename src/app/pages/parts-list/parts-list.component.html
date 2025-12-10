@@ -9,54 +9,54 @@
 
   <div class="table-card">
     @if (parts$ | async; as parts) {
-      @if (parts.length > 0) {
-        <table>
-          <thead>
-            <tr>
-              <th>SKU</th>
-              <th>Nome</th>
-              <th>Vista Frontal</th>
-              <th>Vista Lateral</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (part of parts; track part.id) {
-              <tr>
-                <td><span class="sku-pill">{{ part.sku }}</span></td>
-                <td>{{ part.name }}</td>
-                <td>
-                  <div class="image-cell">
-                    <img [src]="part.front_image_url" [alt]="part.name + ' - frontal'">
-                  </div>
-                </td>
-                <td>
-                  <div class="image-cell">
-                    <img [src]="part.side_image_url" [alt]="part.name + ' - lateral'">
-                  </div>
-                </td>
-                <td>
-                  <div class="actions-cell">
-                    <button class="edit-button">Editar</button>
-                    <button 
-                      class="history-button" 
-                      [routerLink]="['/parts', part.id]"
-                      title="Ver Histórico de Inspeções"
-                    >
-                      Histórico
-                    </button>
-                    <button class="delete-button" (click)="onDelete(part)">Excluir</button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      } @else {
-        <p class="empty-message">Nenhuma peça cadastrada ainda. <a routerLink="/create-pattern-model">Adicione a primeira!</a></p>
-      }
+    @if (parts.length > 0) {
+    <table>
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Nome</th>
+          <th>Vista Frontal</th>
+          <th>Vista Lateral</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (part of parts; track part.id) {
+        <tr>
+          <td><span class="sku-pill">{{ part.sku }}</span></td>
+          <td>{{ part.name }}</td>
+          <td>
+            <div class="image-cell">
+              <img [src]="part.front_image_url" [alt]="part.name + ' - frontal'">
+            </div>
+          </td>
+          <td>
+            <div class="image-cell">
+              <img [src]="part.side_image_url" [alt]="part.name + ' - lateral'">
+            </div>
+          </td>
+          <td>
+            <div class="actions-cell">
+              <button class="edit-button" [class.selected]="part.id === selectedPartId" (click)="onSelect(part)"
+                title="Selecionar para Comparação">
+                {{ part.id === selectedPartId ? 'Selecionado' : 'Selecionar' }}
+              </button>
+              <button class="history-button" [routerLink]="['/parts', part.id]" title="Ver Histórico de Inspeções">
+                Histórico
+              </button>
+              <button class="delete-button" (click)="onDelete(part)">Excluir</button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
     } @else {
-      <p class="loading-message">Carregando peças...</p>
+    <p class="empty-message">Nenhuma peça cadastrada ainda. <a routerLink="/create-pattern-model">Adicione a
+        primeira!</a></p>
+    }
+    } @else {
+    <p class="loading-message">Carregando peças...</p>
     }
   </div>
 </div>

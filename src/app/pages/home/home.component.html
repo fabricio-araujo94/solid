@@ -1,22 +1,29 @@
 <div class="welcome-section">
   <h2>Bem-vindo ao SOLID</h2>
-  <p>Sistema completo para análise e gerenciamento de peças metalúrgicas. Escolha uma das opções abaixo para começar.</p>
+  <p>Sistema completo para análise e gerenciamento de peças metalúrgicas. Escolha uma das opções abaixo para começar.
+  </p>
 </div>
 
 @if (stats$ | async; as stats) {
-  <div class="content">
-    <div class="action-cards">
-      <app-action-card routerLink="/create-pattern-model" title="+ Adicionar Peça" description="Cadastre uma nova peça padrão no sistema com todas as especificações técnicas necessárias." colorClass="green"></app-action-card>
-      <app-action-card routerLink="/list-models" title="Listar Peças" description="Visualize todas as peças cadastradas, gerencie e edite as informações dos componentes." colorClass="blue"></app-action-card>
-      <app-action-card routerLink="/compare-models" title="Comparar Peças" description="Realize análises comparativas entre diferentes peças para identificar padrões e diferenças." colorClass="purple"></app-action-card>
-    </div>
-
-    <div class="stats-cards">
-      <app-stat-card [statValue]="stats.totalParts" statLabel="Peças Cadastradas"></app-stat-card>
-      <app-stat-card [statValue]="stats.totalAnalyses" statLabel="Análises Realizadas"></app-stat-card>
-      <app-stat-card [statValue]="stats.activeComparisons" statLabel="Comparações Ativas"></app-stat-card>
-    </div>
+<div class="content">
+  <div class="action-cards">
+    <app-action-card routerLink="/create-pattern-model" title="+ Adicionar Peça"
+      description="Cadastre uma nova peça padrão no sistema com todas as especificações técnicas necessárias."
+      colorClass="green"></app-action-card>
+    <app-action-card routerLink="/list-models" title="Listar Peças"
+      description="Visualize todas as peças cadastradas, gerencie e edite as informações dos componentes."
+      colorClass="blue"></app-action-card>
+    <app-action-card [routerLink]="['/compare-models', selectedPartId]" title="Comparar Peças"
+      description="Realize análises comparativas entre diferentes peças para identificar padrões e diferenças."
+      colorClass="purple" style="cursor: pointer;"></app-action-card>
   </div>
+
+  <div class="stats-cards">
+    <app-stat-card [statValue]="stats.totalParts" statLabel="Peças Cadastradas"></app-stat-card>
+    <app-stat-card [statValue]="stats.totalAnalyses" statLabel="Análises Realizadas"></app-stat-card>
+    <app-stat-card [statValue]="stats.activeComparisons" statLabel="Comparações Ativas"></app-stat-card>
+  </div>
+</div>
 } @else {
-  <p>Carregando estatísticas...</p>
+<p>Carregando estatísticas...</p>
 }
