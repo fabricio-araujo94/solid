@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { 
-  FormBuilder, 
-  FormGroup, 
-  ReactiveFormsModule, 
-  Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { PartsService } from '../../services/parts.service';
 
@@ -28,7 +29,7 @@ export class PartAddComponent {
 
   onFileSelected(event: Event, controlName: "input_side_image" | "input_front_image"): void {
     const input = event.target as HTMLInputElement;
-    if(input.files && input.files.length > 0) {
+    if (input.files && input.files.length > 0) {
       const file = input.files[0];
       this.partForm.patchValue({ [controlName]: file });
       this.partForm.get(controlName)?.markAsTouched();
@@ -38,7 +39,7 @@ export class PartAddComponent {
   }
 
   onSubmit(): void {
-    if(this.partForm.invalid) {
+    if (this.partForm.invalid) {
       this.partForm.markAllAsTouched();
       return;
     }
@@ -47,13 +48,14 @@ export class PartAddComponent {
 
     formData.append("name", this.partForm.get("name")?.value);
     formData.append("sku", this.partForm.get("sku")?.value);
-  formData.append("side_image", this.partForm.get("input_side_image")?.value);
-  formData.append("front_image", this.partForm.get("input_front_image")?.value);
+    formData.append("side_image", this.partForm.get("input_side_image")?.value);
+    formData.append("front_image", this.partForm.get("input_front_image")?.value);
+    formData.append("part_type", "reference");
 
-  // Debug: log entries so we can inspect the FormData contents in devtools
-  const entries: Array<[string, any]> = [];
-  formData.forEach((value, key) => entries.push([key, value]));
-  console.log('FormData entries:', entries);
+    // Debug: log entries so we can inspect the FormData contents in devtools
+    const entries: Array<[string, any]> = [];
+    formData.forEach((value, key) => entries.push([key, value]));
+    console.log('FormData entries:', entries);
 
     this.partServices.addPart(formData).subscribe({
       next: () => {
