@@ -54,6 +54,8 @@ export class ComparisonComponent implements OnInit {
 
   @ViewChild('defectCanvasFront') defectCanvasFront!: ElementRef<HTMLCanvasElement>;
   @ViewChild('defectCanvasSide') defectCanvasSide!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('fileInputFront') fileInputFront!: ElementRef<HTMLInputElement>;
+  @ViewChild('fileInputSide') fileInputSide!: ElementRef<HTMLInputElement>;
 
   public status = Status.Initial;
   public StatusEnum = Status;
@@ -172,10 +174,13 @@ export class ComparisonComponent implements OnInit {
   reboot(): void {
     this.status = Status.Initial;
     this.uploadForm.reset();
+
+    if (this.fileInputFront) this.fileInputFront.nativeElement.value = '';
+    if (this.fileInputSide) this.fileInputSide.nativeElement.value = '';
+
     this.jobId = null;
     this.generatedModelUrl = null;
     this.resetDefects();
-    console.log("Eu estive aqui");
   }
 
   // Private Methods - Comparison Flow
