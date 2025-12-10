@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ComparisonJob, Part, PartsService } from '../../services/parts.service';
 
 @Component({
   selector: 'app-part-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './part-detail.component.html',
   styleUrl: './part-detail.component.css'
 })
@@ -19,7 +19,7 @@ export class PartDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    
+
     if (id) {
       this.loadPartDetails(id);
     } else {
@@ -52,9 +52,9 @@ export class PartDetailComponent implements OnInit {
       }
     });
   }
-  
+
   getStatusClass(status: string): string {
-    switch(status.toUpperCase()) {
+    switch (status.toUpperCase()) {
       case 'COMPLETE': return 'status-complete';
       case 'PENDING':
       case 'PROCESSING': return 'status-pending';

@@ -1,80 +1,122 @@
-<div class="list-container">
-  <header class="page-header">
-    <div>
-      <h2>Detalhes da Peça Padrão</h2>
-      <p>Visualização da peça e histórico de controle de qualidade.</p>
+<div class="container animate-fade-in">
+
+  <header class="main-header">
+    <div class="header-content">
+      <h1>Detalhes da Peça</h1>
+      <p>Gerenciamento e histórico de controle de qualidade</p>
     </div>
-    <button class="add-button" routerLink="/parts" title="Voltar para a lista">Voltar</button>
+    <button class="btn-back" routerLink="/parts" title="Voltar para a lista">
+      ← Voltar para Lista
+    </button>
   </header>
 
   @if (isLoading) {
-    <p class="loading-message">Carregando detalhes da peça e histórico...</p>
+  <div class="loading-message">
+    <p>Carregando informações...</p>
+  </div>
   } @else if (part) {
-    <div class="table-card mb-5">
-      <h3 class="text-xl font-bold mb-4 border-b pb-2">Peça: {{ part.name }} ({{ part.sku }})</h3>
-      
-      <div class="grid grid-cols-2 gap-4 part-info-grid">
-        <div>
-          <p class="font-semibold">SKU:</p>
-          <span class="sku-pill">{{ part.sku }}</span>
+
+  <!-- Part Overview Card -->
+  <section class="card">
+    <div class="card-header">
+      <h2 class="card-title">
+        {{ part.name }}
+        <span class="sku-badge">{{ part.sku }}</span>
+      </h2>
+    </div>
+
+    <div class="details-grid">
+      <!-- Text Details -->
+      <div class="details-info">
+        <div class="info-group">
+          <span class="info-label">Nome da Peça</span>
+          <div class="info-value text-lg font-medium">{{ part.name }}</div>
         </div>
-        
-        <div class="image-detail">
-          <p class="font-semibold">Imagem Frontal Padrão:</p>
-          <img [src]="part.front_image_url" alt="Vista frontal da peça padrão">
+        <div class="info-group">
+          <span class="info-label">Código SKU</span>
+          <div class="info-value font-mono">{{ part.sku }}</div>
         </div>
-        <div class="image-detail">
-          <p class="font-semibold">Imagem Lateral Padrão:</p>
-          <img [src]="part.side_image_url" alt="Vista lateral da peça padrão">
+        <div class="info-group">
+          <span class="info-label">Status do Sistema</span>
+          <div class="info-value">
+            <span class="status-pill status-complete">Ativo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images Gallery -->
+      <div class="images-container">
+        <div class="image-wrapper">
+          <img [src]="part.front_image_url || 'assets/placeholder.png'" alt="Vista frontal">
+          <span class="image-label">Vista Frontal</span>
+        </div>
+        <div class="image-wrapper">
+          <img [src]="part.side_image_url || 'assets/placeholder.png'" alt="Vista lateral">
+          <span class="image-label">Vista Lateral</span>
         </div>
       </div>
     </div>
+  </section>
 
-    <div class="table-card">
-      <h3 class="text-xl font-bold mb-4 border-b pb-2">Histórico de Inspeções (Jobs)</h3>
-      
-      @if (history.length > 0) {
-        <table>
-          <thead>
-            <tr>
-              <th>ID Job</th>
-              <th>Data/Hora</th>
-              <th>Status</th>
-              <th>Modelo 3D</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (job of history; track job.id) {
-              <tr>
-                <td>#{{ job.id }}</td>
-                <td>{{ job.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td>
-                  <span [class]="getStatusClass(job.status)">
-                    {{ job.status }}
-                  </span>
-                </td>
-                <td>
-                  @if (job.output_model_url) {
-                    <a [href]="job.output_model_url" target="_blank" class="text-blue-600 underline">
-                      Download
-                    </a>
-                  } @else {
-                    Aguardando...
-                  }
-                </td>
-                <td>
-                  <button class="edit-button" title="Ver o modelo gerado e os controles">Ver Comparação</button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      } @else {
-        <p class="empty-message">Nenhuma inspeção (Job) realizada para esta peça ainda.</p>
-      }
+  <!-- Inspection History Card -->
+  <section class="card">
+    <div class="card-header">
+      <h2 class="card-title">Histórico de Inspeções (Jobs)</h2>
     </div>
+
+    @if (history.length > 0) {
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Job</th>
+            <th>Data da Inspeção</th>
+            <th>Status</th>
+            <th>Modelo 3D</th>
+            <th style="text-align: right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (job of history; track job.id) {
+          <tr>
+            <td>
+              <span class="font-mono text-slate-500">#{{ job.id }}</span>
+            </td>
+            <td>{{ job.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <span class="status-pill" [class]="getStatusClass(job.status)">
+                {{ job.status }}
+              </span>
+            </td>
+            <td>
+              @if (job.output_model_url) {
+              <a [href]="job.output_model_url" target="_blank" class="download-link">
+                Download Modelo
+              </a>
+              } @else {
+              <span class="text-gray-400">-</span>
+              }
+            </td>
+            <td style="text-align: right;">
+              <button class="btn-action" title="Ver detalhes da comparação">
+                Ver Análise
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    } @else {
+    <p class="empty-message">Nenhuma inspeção realizada para esta peça até o momento.</p>
+    }
+  </section>
+
   } @else {
-    <p class="empty-message">Peça não encontrada.</p>
+  <div class="empty-message">
+    <h3>Peça não encontrada</h3>
+    <p>Não foi possível localizar os detalhes solicitados.</p>
+    <button class="btn-back" style="margin-top: 1rem;" routerLink="/list-models">Voltar</button>
+  </div>
   }
 </div>

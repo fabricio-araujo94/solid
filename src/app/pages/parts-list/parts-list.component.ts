@@ -14,7 +14,7 @@ export class PartsListComponent implements OnInit {
   private partsService = inject(PartsService);
 
   private refreshList = new BehaviorSubject<void>(undefined);
-  
+
   public parts$!: Observable<Part[]>;
 
   ngOnInit(): void {
