@@ -37,6 +37,8 @@ export class PartsService {
   private http = inject(HttpClient);
   private apiUrl = `${inject(API_URL)}/api/parts/`;
 
+  private selectedPartId: number | null = null;
+
   constructor() { }
 
   addPart(partData: FormData): Observable<Part> {
@@ -61,5 +63,13 @@ export class PartsService {
 
   deletePart(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}${id}`);
+  }
+
+  selectPartForComparison(id: number): void {
+    this.selectedPartId = id;
+  }
+
+  getSelectedPartForComparison(): number | null {
+    return this.selectedPartId;
   }
 }
