@@ -10,6 +10,7 @@ export interface Part {
   side_image_url: string;
   front_image_url: string;
   model_3d_url: string | null;
+  part_type?: 'reference' | 'sample';
 }
 
 export interface JobHistory {
@@ -44,8 +45,10 @@ export class PartsService {
     return this.http.post<Part>(this.apiUrl, partData);
   }
 
-  getParts(): Observable<Part[]> {
-    return this.http.get<Part[]>(this.apiUrl);
+  getParts(type: string = 'reference'): Observable<Part[]> {
+    return this.http.get<Part[]>(this.apiUrl, {
+      params: { type }
+    });
   }
 
   getPart(id: number): Observable<Part> {

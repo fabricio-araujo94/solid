@@ -50,6 +50,7 @@ export class PartAddComponent {
     formData.append("sku", this.partForm.get("sku")?.value);
     formData.append("side_image", this.partForm.get("input_side_image")?.value);
     formData.append("front_image", this.partForm.get("input_front_image")?.value);
+    formData.append("part_type", "reference");
 
     // Debug: log entries so we can inspect the FormData contents in devtools
     const entries: Array<[string, any]> = [];
