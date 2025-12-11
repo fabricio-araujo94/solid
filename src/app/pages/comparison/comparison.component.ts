@@ -22,7 +22,7 @@ import {
 } from '../../services/comparison.service';
 
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { interval, startWith, switchMap, map, forkJoin, takeWhile } from 'rxjs';
 import { Viewer3dComponent } from '../../components/viewer3d/viewer3d.component';
 import { PartsService } from '../../services/parts.service';
@@ -34,7 +34,8 @@ enum Status {
   Processing,
   Ready,
   Approved,
-  Rejected
+  Rejected,
+  ViewOnly
 }
 
 @Component({
@@ -47,6 +48,7 @@ enum Status {
 export class ComparisonComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router); // Injected Router
   private readonly comparisonService = inject(ComparisonService);
   private readonly partsService = inject(PartsService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -61,6 +63,7 @@ export class ComparisonComponent implements OnInit {
   public StatusEnum = Status;
   public showAnalysis = false;
   public analysisTime = 0;
+  public isViewMode = false;
 
   public defectsFront: DefectBox[] = [];
   public defectsSide: DefectBox[] = [];
@@ -71,7 +74,7 @@ export class ComparisonComponent implements OnInit {
   public generatedModelUrl: string | null = null;
 
   private partReferentialId!: number;
-  private jobId: string | null = null;
+  protected jobId: string | null = null;
 
   constructor() {
     this.uploadForm = this.fb.group({
@@ -82,6 +85,16 @@ export class ComparisonComponent implements OnInit {
 
   ngOnInit(): void {
     this.partReferentialId = +this.route.snapshot.params['id'];
+
+    this.route.queryParams.subscribe(params => {
+      if (params['mode'] === 'view' && params['jobId']) {
+        this.isViewMode = true;
+        this.status = Status.ViewOnly;
+        this.jobId = params['jobId'];
+        this.loadHistoricalJob(this.jobId!);
+      }
+    });
+
     this.partsService.getPart(this.partReferentialId).subscribe(part => {
       if (part.model_3d_url) {
         this.referenceModelUrl = part.model_3d_url;
@@ -181,6 +194,17 @@ export class ComparisonComponent implements OnInit {
     this.jobId = null;
     this.generatedModelUrl = null;
     this.resetDefects();
+    this.isViewMode = false;
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { mode: null, jobId: null },
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/parts', this.partReferentialId]);
   }
 
   // Private Methods - Comparison Flow
@@ -251,6 +275,21 @@ export class ComparisonComponent implements OnInit {
         }
       },
       error: (err) => console.error('Error generating 3D model:', err)
+    });
+  }
+
+  private loadHistoricalJob(jobId: string): void {
+    this.comparisonService.checkJobStatus(jobId).subscribe({
+      next: (statusResponse) => {
+        if (statusResponse.modelUrl) {
+          this.generatedModelUrl = statusResponse.modelUrl;
+        } else {
+          console.warn('No model URL found for this job.');
+        }
+      },
+      error: (err) => {
+        console.error('Error loading historical job:', err);
+      }
     });
   }
 

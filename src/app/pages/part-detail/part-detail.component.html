@@ -5,7 +5,7 @@
       <h1>Detalhes da Peça</h1>
       <p>Gerenciamento e histórico de controle de qualidade</p>
     </div>
-    <button class="btn-back" routerLink="/parts" title="Voltar para a lista">
+    <button class="btn-back" routerLink="/list-models" title="Voltar para a lista">
       ← Voltar para Lista
     </button>
   </header>
@@ -98,7 +98,7 @@
               }
             </td>
             <td style="text-align: right;">
-              <button class="btn-action" title="Ver detalhes da comparação">
+              <button class="btn-action" title="Ver detalhes da comparação" (click)="viewAnalysis(job)">
                 Ver Análise
               </button>
             </td>

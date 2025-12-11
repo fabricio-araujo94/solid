@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ComparisonJob, Part, PartsService } from '../../services/parts.service';
 
 @Component({
@@ -11,6 +11,7 @@ import { ComparisonJob, Part, PartsService } from '../../services/parts.service'
 })
 export class PartDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private partService = inject(PartsService);
 
   part: Part | undefined;
@@ -55,10 +56,20 @@ export class PartDetailComponent implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status.toUpperCase()) {
-      case 'COMPLETE': return 'status-complete';
-      case 'PENDING':
-      case 'PROCESSING': return 'status-pending';
-      default: return 'status-failed';
+      case 'APPROVED': return 'status-approved';
+      case 'REJECTED': return 'status-rejected';
+      default: return 'status-rejected';
     }
+  }
+
+  viewAnalysis(job: ComparisonJob): void {
+    if (!this.part) return;
+
+    this.router.navigate(['/compare-models', this.part.id], {
+      queryParams: {
+        mode: 'view',
+        jobId: job.id
+      }
+    });
   }
 }

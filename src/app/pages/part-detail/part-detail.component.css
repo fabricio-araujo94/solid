@@ -243,25 +243,14 @@ tr:hover td {
 }
 
 /* Reusing existing logic classes but with better styles */
-.status-complete {
+.status-approved {
   background-color: #dcfce7;
-  /* Green-100 */
   color: #15803d;
-  /* Green-700 */
 }
 
-.status-pending {
-  background-color: #ffedd5;
-  /* Orange-100 */
-  color: #c2410c;
-  /* Orange-700 */
-}
-
-.status-failed {
+.status-rejected {
   background-color: #fee2e2;
-  /* Red-100 */
   color: #b91c1c;
-  /* Red-700 */
 }
 
 /* --- Helper/State classes --- */

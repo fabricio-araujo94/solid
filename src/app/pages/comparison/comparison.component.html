@@ -1,7 +1,8 @@
-<div class="container">
+<div class="container animate-fade-in">
   <div class="control-panel">
 
     <!-- CARD: UPLOAD -->
+    @if (!isViewMode) {
     <div class="card">
       <h3>Upload de Imagens</h3>
 
@@ -25,6 +26,15 @@
         }
       </button>
     </div>
+    } @else {
+    <div class="card">
+      <h3>Modo de Visualização</h3>
+      <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
+        Visualizando histórico de comparação (Job #{{ jobId }})
+      </p>
+      <button class="reset" (click)="goBack()">← Voltar</button>
+    </div>
+    }
 
     <!-- Controls removed: use mouse (OrbitControls) inside the 3D viewer -->
 
@@ -69,6 +79,7 @@
       <!-- ACTIONS + FEEDBACK -->
       <div class="actions-feedback">
 
+        @if (!isViewMode) {
         <div class="actions-buttons">
           <button class="approve" (click)="approvePart()" [disabled]="status !== StatusEnum.Ready">✓ Aprovar
             Peça</button>
@@ -81,6 +92,7 @@
           <button class="save-sample" (click)="saveAsSample()" [disabled]="status !== StatusEnum.Ready">💾 <br>Salvar
           </button>
         </div>
+        }
 
         @if (status === StatusEnum.Approved) {
         <div class="feedback-banner approved">✓ Peça Aprovada</div>
@@ -117,3 +129,4 @@
       </div>
     </div>
   </div>
+</div>
