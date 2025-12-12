@@ -1,3 +1,3 @@
 export const backend_api = {
-    apiUrl: 'https://solid-backend-w130.onrender.com'
+    apiUrl: "https://special-rotary-phone-pvwjvqvv95c99jp-8000.app.github.dev"
 };

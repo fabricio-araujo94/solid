@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { backend_api } from '../../environments/backend-api';
+import { API_URL } from '../tokens/api.token';
 
 export interface DashboardStats {
   totalParts: number;
@@ -14,7 +14,7 @@ export interface DashboardStats {
 })
 export class DashboardService {
   private http = inject(HttpClient);
-  private apiUrl = `${backend_api.apiUrl}/api/stats`;
+  private apiUrl = `${inject(API_URL)}/api/stats`;
 
 
   constructor() { }
