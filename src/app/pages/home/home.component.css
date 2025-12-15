@@ -20,9 +20,27 @@
   color: #666;
 }
 
-.action-cards, .stats-cards {
+.action-cards,
+.stats-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
   margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+
+  .action-cards,
+  .stats-cards {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  :host {
+    padding: 20px;
+  }
+
+  .welcome-section h2 {
+    font-size: 24px;
+  }
 }

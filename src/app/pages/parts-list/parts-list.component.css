@@ -5,6 +5,28 @@
   min-height: calc(100vh - 74px);
 }
 
+@media (max-width: 768px) {
+  :host {
+    padding: 20px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .table-card {
+    overflow-x: auto;
+    padding: 0;
+  }
+
+  .actions-cell {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;

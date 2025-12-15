@@ -5,6 +5,26 @@
   background-color: #e6e6e6;
 }
 
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    padding: 15px;
+    gap: 20px;
+  }
+
+  .control-panel {
+    max-width: 100%;
+  }
+
+  .viewers {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-buttons {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .control-panel {
   flex: 1;
   max-width: 300px;

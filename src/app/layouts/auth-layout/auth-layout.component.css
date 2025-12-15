@@ -16,6 +16,16 @@
   background-color: #34495e;
 }
 
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 32px;
+  }
+
+  :host {
+    padding: 10px;
+  }
+}
+
 .page-header {
   text-align: center;
   color: white;
@@ -32,5 +42,6 @@
 .page-header p {
   margin: 5px 0 0 0;
   font-size: 16px;
-  color: #bdc3c7; /* Um cinza claro para o subtítulo */
+  color: #bdc3c7;
+  /* Um cinza claro para o subtítulo */
 }

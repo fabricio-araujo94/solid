@@ -11,8 +11,9 @@
   padding: 30px 40px;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px; /* Um pouco mais estreito para login */
+  width: 90%;
+  max-width: 400px;
+  /* Um pouco mais estreito para login */
   text-align: center;
 }
 
@@ -57,7 +58,7 @@ button {
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 button:disabled {
@@ -65,7 +66,8 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.error-message, .firebase-error {
+.error-message,
+.firebase-error {
   color: #e74c3c;
   font-size: 12px;
   margin-top: 5px;

@@ -295,4 +295,12 @@ a.download-link:hover {
     align-items: flex-start;
     gap: 1rem;
   }
+
+  .images-container {
+    grid-template-columns: 1fr;
+  }
+
+  .header-content h1 {
+    font-size: 1.5rem;
+  }
 }
