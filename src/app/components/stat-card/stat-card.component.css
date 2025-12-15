@@ -18,3 +18,17 @@
   font-size: 16px;
   color: #7f8c8d;
 }
+
+@media (max-width: 768px) {
+  .card {
+    padding: 15px;
+  }
+
+  .stat-number {
+    font-size: 36px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+  }
+}

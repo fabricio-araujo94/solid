@@ -24,6 +24,24 @@ p {
   opacity: 0.9;
 }
 
-.green { background-color: #2ecc71; }
-.blue { background-color: #3498db; }
-.purple { background-color: #9b59b6; }
+.green {
+  background-color: #2ecc71;
+}
+
+.blue {
+  background-color: #3498db;
+}
+
+.purple {
+  background-color: #9b59b6;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 15px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+}
